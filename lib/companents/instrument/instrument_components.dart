@@ -352,6 +352,37 @@ class InstrumentComponents {
       )
   );
 
+  void paymentUpdate(BuildContext context, id) => Get.defaultDialog(
+      backgroundColor: AppColors.white,
+      barrierDismissible: false,
+      titlePadding: EdgeInsets.only(top: 15.h, left: 10.w, right: 10.w),
+      contentPadding: EdgeInsets.only(top: 15.h, left: 15.w, right: 15.w),
+      title: 'Tasdiqlash'.tr,
+      titleStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp, color: AppColors.red, fontFamily: 'Schyler'),
+      content: Column(
+        children: [
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppColors.green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))), onPressed: (){ApiController().changeTransactionStatus(id, 2, '');Get.back();}, child: TextSmall(text: 'To`lash'.tr, color: AppColors.white, maxLines: 3)),
+          SizedBox(height: 10.h),
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppColors.red, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))), onPressed: (){ApiController().changeTransactionStatus(id, 3, '');Get.back();}, child: TextSmall(text: 'Rad etish'.tr, color: AppColors.white, maxLines: 3)),
+          SizedBox(height: 10.h),
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))), onPressed: (){ApiController().changeTransactionStatus(id, 1, '');Get.back();}, child: TextSmall(text: 'Jarayonga o`tkazish'.tr, color: AppColors.white, maxLines: 3)),
+          SizedBox(height: 10.h),
+          ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: AppColors.blue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))), onPressed: (){ApiController().changeTransactionStatus(id, 0, '');Get.back();}, child: TextSmall(text: 'Hisoblash'.tr, color: AppColors.white, maxLines: 3)),
+          SizedBox(height: 10.h),
+        ],
+      ),
+      cancel: Container(
+          width: 120.w,
+          height: 42.h,
+          margin: EdgeInsets.only(bottom: 15.h,top: 25.h),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15.r), color: AppColors.red),
+          child: TextButton(
+              onPressed: () => Get.back(),
+              child: TextSmall(text: 'Bekor qilish'.tr, color: AppColors.white, fontWeight: FontWeight.bold, fontSize: 15.sp)
+          )
+      )
+  );
+
   void languageDialog(BuildContext context) => Get.bottomSheet(
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.horizontal(right: Radius.circular(10.0),left: Radius.circular(10.0))),
       enableDrag: true,

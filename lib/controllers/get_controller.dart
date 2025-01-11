@@ -19,6 +19,7 @@ import '../models/sample/profile_info_model.dart';
 import '../models/sample/reviews_model.dart';
 import '../models/sample/sorted_pay_transactions.dart';
 import '../models/sample/warranty_model.dart';
+import 'api_controller.dart';
 
 class GetController extends GetxController {
 
@@ -47,9 +48,11 @@ class GetController extends GetxController {
   RxList<String> dropDownItemsCities = <String>[].obs;
   RxList<String> dropDownItem = <String>['Sotuvchi'.tr, 'O‘rnatuvchi'.tr, 'Buyurtmachi'.tr].obs;
   RxList<String> dropDownItemNotify = <String>['Qurilmalar bo‘yicha'.tr, 'Foydalanuvchilar turi bo‘yicha'.tr, 'Joylashuvlar bo‘yicha'.tr].obs;
+  var listMonth = [{'name':'Hammasi'.tr, 'selected': true}, {'name':'Yanvar'.tr, 'selected': false}, {'name':'Fevral'.tr, 'selected': false}, {'name':'Mart'.tr, 'selected': false}, {'name':'Aprel'.tr, 'selected': false}, {'name':'Mays'.tr, 'selected': false}, {'name':'Iyun'.tr, 'selected': false}, {'name':'Iyul'.tr, 'selected': false}, {'name':'Avgust'.tr, 'selected': false}, {'name':'Sentabr'.tr, 'selected': false}, {'name':'Oktabr'.tr, 'selected': false}, {'name':'Noyabr'.tr, 'selected': false}, {'name':'Dekabr'.tr, 'selected': false}].obs;
   RxList<String> dropDownItemCategory = <String>[].obs;
   var widgetOptions = <Widget>[];
   Rx<Uint8List> imagePath = Rx<Uint8List>(Uint8List(0));
+  RxInt selectMonth = 0.obs;
 
   Locale get language => Locale(GetStorage().read('language') ?? 'uz_UZ');
   get token => GetStorage().read('token');
@@ -256,6 +259,82 @@ class GetController extends GetxController {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function
+
+  String getSortedTransactionsResultIndex(int? value) {
+    var result = sortedTransactionsModel.value.result;
+    List<int> indices = [];
+
+    for (var i = 0; i < result!.length; i++) {
+      for (var j = 0; j < result[i].results!.length; j++) {
+        final operation = result[i].results![j].operation;
+        if (value == null || operation == value) {
+          indices.add(j);
+        }
+      }
+    }
+
+    return indices.isEmpty ? '0' : indices.length.toString();
+  }
+
+  void changeSelectedMonth(int value) {
+    for (var i = 0; i < listMonth.length; i++) {
+      listMonth[i]['selected'] = i == value ? true : false;
+    }
+
+    selectMonth.value = value;
+    if (value == 0) {
+      ApiController().getTransactions();
+    } else {
+      DateTime today = DateTime.now();
+      DateTime firstDayOfMonth = DateTime(today.year, DateTime(today.year, selectMonth.value , 1).month, 1);
+      if (firstDayOfMonth.month > 12) {
+        firstDayOfMonth = DateTime(today.year + (firstDayOfMonth.month ~/ 12), firstDayOfMonth.month % 12, 1);
+      }
+      DateTime lastDayOfMonth = DateTime(firstDayOfMonth.year, firstDayOfMonth.month + 1, 0);
+      if (firstDayOfMonth.month == 2) {
+        if ((firstDayOfMonth.year % 4 == 0 && firstDayOfMonth.year % 100 != 0) || (firstDayOfMonth.year % 400 == 0)) {
+          lastDayOfMonth = DateTime(firstDayOfMonth.year, firstDayOfMonth.month, 29); // Leap year
+        } else {
+          lastDayOfMonth = DateTime(firstDayOfMonth.year, firstDayOfMonth.month, 28); // Non-leap year
+        }
+      }
+      String filter = 't.date_created >= "${DateFormat('yyyy-MM-dd').format(firstDayOfMonth)}" '
+          'AND t.date_created <= "${DateFormat('yyyy-MM-dd').format(lastDayOfMonth)} 23:59:59"';
+      ApiController().getTransactions(filter: filter);
+    }
+    listMonth.refresh();
+  }
+
+  String getMoneyFormat(int? value) => value == null ? '' : value.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]} ');
+
+  String getDateFormat(String timeStamp) {
+    try {
+      if (timeStamp.isEmpty) return '';
+
+      DateTime date;
+      try {
+        date = DateTime.parse(timeStamp);
+      } catch (_) {
+        date = DateFormat('dd.MM.yyyy').parse(timeStamp);
+      }
+
+      var now = DateTime.now();
+      var yesterday = now.subtract(const Duration(days: 1));
+
+      if (date.year == now.year && date.month == now.month && date.day == now.day) {
+        return 'Bugun'.tr; // Bugungi sana
+      } else if (date.year == yesterday.year && date.month == yesterday.month && date.day == yesterday.day) {
+        return 'Kecha'.tr; // Kechagi sana
+      } else {
+        return '${date.day} ${getMonth(DateFormat('MMM').format(date))} ${date.year}';
+      }
+    } catch (e) {
+      return ''; // Xatolik bo'lsa bo'sh qiymat qaytariladi
+    }
+  }
+
+  String getMonth(String month) => month.isEmpty ? '' : month.tr;
+
   void changeWidgetOptions() {
     widgetOptions.add(PaymentPage());
     widgetOptions.add(ProductsPage());

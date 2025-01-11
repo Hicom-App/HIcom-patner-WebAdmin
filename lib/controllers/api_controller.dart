@@ -12,7 +12,6 @@ import '../models/sample/categories.dart';
 import '../models/sample/profile_info_model.dart';
 import '../models/sample/reviews_model.dart';
 import '../models/sample/sorted_pay_transactions.dart';
-import '../not_connection.dart';
 import '../resource/colors.dart';
 import 'get_controller.dart';
 import 'package:http_parser/http_parser.dart';
@@ -215,16 +214,16 @@ class ApiController extends GetxController {
         return;
       }
       else if (response.statusCode == 404) {
-        Get.offAll(() => const NotConnection(), transition: Transition.fadeIn);
+        InstrumentComponents().showToast('Serverda xatolik bor 404'.tr, color: AppColors.red, textColor: AppColors.white);
         return;
       }
       else {
-        Get.offAll(const NotConnection(), transition: Transition.fadeIn);
+        debugPrint('Xatolik: Serverga ulanishda muammo');
       }
     } catch(e, stacktrace) {
       debugPrint('bilmasam endi: $e');
       debugPrint(stacktrace.toString());
-      Get.offAll(const NotConnection(), transition: Transition.fadeIn);
+      InstrumentComponents().showToast('Serverda xatolik bor $e'.tr, color: AppColors.red, textColor: AppColors.white);
     }
   }
 
@@ -575,6 +574,31 @@ class ApiController extends GetxController {
         }
       } else {
         debugPrint('Xatolik: Serverga ulanishda muammo');
+      }
+    } catch (e, stacktrace) {
+      debugPrint('Xatolik: $e');
+      debugPrint(stacktrace.toString());
+    }
+  }
+
+
+  Future<void> changeTransactionStatus(int id, int status, String description) async {
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/payment/transactions'));
+      request.headers.addAll(multipartHeaderBearer());
+      request.fields['id'] = id.toString();
+      request.fields['status'] = status.toString();
+      request.fields['description'] = description;
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var data = jsonDecode(await response.stream.bytesToString());
+        if (data['status'] == 0) {
+          getTransactions();
+        } else {
+          _getController.shakeKey[8].currentState?.shake();
+          InstrumentComponents().showToast('Ehhh nimadir xato ketdi'.tr, color: AppColors.red, textColor: AppColors.white);
+          debugPrint('Xatolik: ${data['message']}');
+        }
       }
     } catch (e, stacktrace) {
       debugPrint('Xatolik: $e');
