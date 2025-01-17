@@ -47,13 +47,7 @@ class DetailPage extends StatelessWidget {
                                 backgroundColor: Colors.grey.shade200,
                                 centerTitle: true,
                                 elevation: 0,
-                                title: _getController.productsModelDetail.value.result != null
-                                    ? TextLarge(text: _getController.getCategoryName(_getController.productsModelDetail.value.result!.first.categoryId!).toString().toUpperCase(), color: AppColors.black, fontWeight: FontWeight.w500, fontSize: 20.sp)
-                                    : Skeletonizer(child: TextLarge(text: 'Nimadurda', color: AppColors.black, fontWeight: FontWeight.w500, fontSize: 20.sp)),
-                                /*actions: [
-                                  IconButton(icon: Icon(Icons.share, color: AppColors.blue, size: Theme.of(context).iconTheme.fill), onPressed: () => Get.back()),
-                                  IconButton(icon: Icon(Icons.more_vert, color: AppColors.blue, size: Theme.of(context).iconTheme.fill), onPressed: () => Get.back())
-                                ]*/
+                                title: _getController.productsModelDetail.value.result != null ? TextLarge(text: _getController.getCategoryName(_getController.productsModelDetail.value.result!.first.categoryId!).toString().toUpperCase(), color: AppColors.black, fontWeight: FontWeight.w500, fontSize: 20.sp) : Skeletonizer(child: TextLarge(text: 'Nimadurda', color: AppColors.black, fontWeight: FontWeight.w500, fontSize: 20.sp)),
                               )
                           ),
                           Expanded(
@@ -133,7 +127,7 @@ class DetailPage extends StatelessWidget {
                                               TextSmall(text: 'Brend', color: AppColors.black70, fontSize: 10.sp),
                                               SizedBox(width: Get.width * 0.01),
                                               _getController.productsModelDetail.value.result != null
-                                                  ? TextSmall(text: _getController.productsModelDetail.value.result!.first.brand != '' ? _getController.productsModelDetail.value.result!.first.brand.toString() : '-', color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, maxLines: 1, fontSize: 15)
+                                                  ? TextSmall(text: _getController.productsModelDetail.value.result!.first.brand != '' || _getController.productsModelDetail.value.result!.first.brand != 'null' || _getController.productsModelDetail.value.result!.first.brand != null ? _getController.productsModelDetail.value.result!.first.brand.toString() : '-', color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, maxLines: 1, fontSize: 15)
                                                   : Skeletonizer(child: TextSmall(text: 'Nimadur', color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, maxLines: 1, fontSize: 15))
                                             ]
                                         )

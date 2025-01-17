@@ -133,7 +133,6 @@ class ProductsPage extends StatelessWidget{
                           )
                           : InkWell(
                           onTap: () => Get.to(AddProducts(id: _getController.productsModel.value.result![index - 1].id)),
-                          //onTap: () => Get.to(AddProducts(index: index - 1)),
                           child: ProductItem(index: index - 1)),
                   )
               )

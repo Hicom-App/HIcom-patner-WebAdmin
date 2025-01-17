@@ -347,7 +347,8 @@ class GetController extends GetxController {
   //imagePath clear
   void clearImagePath() => imagePath.value = Uint8List(0);
 
-  String getCategoryName(int id) => categoriesModel.value.result != null ? categoriesModel.value.result!.firstWhere((element) => element.id == id).name ?? '' : '';
+  String getCategoryName(int id) => categoriesModel.value.result != null || categoriesModel.value.result!.isNotEmpty
+  ? categoriesModel.value.result!.firstWhere((element) => element.id == id).name ?? '' : '';
 
   final countdownDuration = const Duration(minutes: 1, seconds: 59).obs;
 

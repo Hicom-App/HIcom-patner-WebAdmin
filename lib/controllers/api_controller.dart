@@ -19,7 +19,7 @@ import 'package:http_parser/http_parser.dart';
 class ApiController extends GetxController {
   final GetController _getController = Get.put(GetController());
 
-  final  baseUrl = 'http://185.196.213.76:8080/api';
+  final  baseUrl = 'https://hicom.app:81/api';
 
   //return header function
   Map<String, String> headersBearer() {
@@ -189,16 +189,13 @@ class ApiController extends GetxController {
       debugPrint(response.statusCode.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         var data = jsonDecode(response.body);
-        //debugPrint(data.toString());
         if (data['status'] == 0) {
           _getController.changeProfileInfoModel(ProfileInfoModel.fromJson(data));
           if (isWorker && _getController.profileInfoModel.value.result?.first.firstName == null || _getController.profileInfoModel.value.result?.first.lastName == '') {
             getCountries();
             _getController.updateSelectedDate(DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day));
-            //Get.to(() => const RegisterPage());
           } else if (isWorker) {
             getCountries(me: true);
-            //Get.offAll(() => _getController.getPassCode() != '' ? PasscodePage() : CreatePasscodePage());
             Get.offAll(() => SamplePage());
           }
         }
@@ -428,6 +425,7 @@ class ApiController extends GetxController {
       final response = await http.get(Uri.parse('$baseUrl/catalog/products${isCategory != true ? '?id=$categoryId' : '?category_id=$categoryId'}${filter != null && filter != '' ? '&filter=$filter' : ''}'), headers: headersBearer());
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        debugPrint(data.toString());
         if (data['status'] == 0 && data['result'] != null) {
           if (isCategory == true) {
             _getController.addCategoriesProductsModel(CategoriesModel.fromJson(data));
@@ -556,7 +554,6 @@ class ApiController extends GetxController {
     }
   }
 
-
 // transaksiyalar ro'yxatini olish
   Future<void> getTransactions({String? filter}) async {
     try {
@@ -580,7 +577,6 @@ class ApiController extends GetxController {
       debugPrint(stacktrace.toString());
     }
   }
-
 
   Future<void> changeTransactionStatus(int id, int status, String description) async {
     try {
